@@ -1,0 +1,36 @@
+﻿Build started 3/2/2016 9:06:42 PM.
+     1>Project "C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\wplab2advg\wplab2advg.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\wplab2advg.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       ResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\dialog.res" dialog.rc 
+     1>dialog.h(22): warning RC4005: 'IDD_DIALOG' : redefinition
+         
+     1>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\atlmfc\include\afxres.h(248): warning RC4005: 'ID_HELP' : redefinition
+         
+     1>dialog.rc(14): warning RC2182: duplicate dialog control ID 102
+         
+     1>dialog.rc(15): warning RC2182: duplicate dialog control ID 102
+         
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\Debug\wplab2advg.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\wplab2advg.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\Debug\wplab2advg.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\Debug\wplab2advg.lib" /MACHINE:X86 Debug\dialog.res
+         Debug\wplab2advg.exe.embed.manifest.res
+         Debug\main.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\wplab2advg.exe.embed.manifest" /manifest Debug\wplab2advg.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         wplab2advg.vcxproj -> C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\Debug\wplab2advg.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\wplab2advg.unsuccessfulbuild".
+         Touching "Debug\wplab2advg.lastbuildstate".
+     1>Done Building Project "C:\Users\Liduta\Documents\Visual Studio 2010\Projects\wplab2advg\wplab2advg\wplab2advg.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.82

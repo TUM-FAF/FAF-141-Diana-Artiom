@@ -28,7 +28,6 @@
 #include <tchar.h>
 #include <windows.h>
 #include <windowsx.h>
-#include "resource.h"
 #include <string.h>
 #include <iostream>
 #include <stdio.h>
@@ -36,6 +35,7 @@
 
 /*  Declaration of Window procedure  */
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
+HINSTANCE hInst;
 
 /*  Declare the class name into a global variable  */
 TCHAR szClassName[] = _T("CodeBlocksWindowsApp");
@@ -45,25 +45,26 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
 	LPSTR lpszArgument,
 	int nCmdShow)
 {
-	HWND hwnd;																	/* Handle of the window */
-	MSG messages;																/* Declaration of messages struct variable */
-	WNDCLASSEX windowclass;														/* Data structure for the windowclass */
+	HWND hwnd;																	
+	MSG messages;																
+	WNDCLASSEX windowclass;														
+	hInst = hThisInstance;
 
-																				/* The Window structure */
+																				
 	windowclass.hInstance = hThisInstance;
-	windowclass.lpszClassName = szClassName;									/* Assignment of class name*/
-	windowclass.lpfnWndProc = WindowProcedure;									/* This function is called by windows */
-	windowclass.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;					/* Catching the double-clicks */
+	windowclass.lpszClassName = szClassName;									
+	windowclass.lpfnWndProc = WindowProcedure;									
+	windowclass.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;					
 	windowclass.cbSize = sizeof(WNDCLASSEX);
 
 	/* Use default icon and mouse-pointer */
-	windowclass.hIcon = LoadIcon(hThisInstance, MAKEINTRESOURCE(IDI_ICON));		/*Using the IDI_ICON for the app*/
+	windowclass.hIcon = LoadIcon(hThisInstance, MAKEINTRESOURCE(IDI_ICON));		
 	windowclass.hIconSm = LoadIcon(hThisInstance, MAKEINTRESOURCE(IDI_ICON));	
-	windowclass.hCursor = LoadCursor(NULL, IDC_ARROW);							/* Load the arrow(default) cursor*/
-	windowclass.lpszMenuName = MAKEINTRESOURCE(IDM_MENU);						/* No menu defined */
-	windowclass.cbClsExtra = 0;													/* No extra bytes after the window class */
-	windowclass.cbWndExtra = 0;												    /* structure or the window instance */
-	windowclass.hbrBackground = CreateSolidBrush(RGB(242, 242, 242));			/* Setting the background color */
+	windowclass.hCursor = LoadCursor(NULL, IDC_ARROW);							
+	windowclass.lpszMenuName = MAKEINTRESOURCE(IDM_MENU);						
+	windowclass.cbClsExtra = 0;													
+	windowclass.cbWndExtra = 0;												   
+	windowclass.hbrBackground = CreateSolidBrush(RGB(242, 242, 242));			
 
 	/* Window registration. If it fails return 0 */
 	if (!RegisterClassEx(&windowclass))
@@ -72,17 +73,17 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
 	/* Window creation*/
 	hwnd = CreateWindowEx(
 		0,                   
-		szClassName,															/* Class name */
-		_T("Windows Programming #3"),											/* Title */
-		WS_OVERLAPPEDWINDOW,													/* Default window */
-		420,																	/* Window x position */
-		300,																	/* Window y position */
-		650,																	/* Window width */
-		423,																	/* Window height */
-		HWND_DESKTOP,															/* The actual window - child-window to desktop */
-		NULL,																	/* No menu defined */
-		hThisInstance,															/* Program Instance handler */
-		NULL																	/* No Window Creation data */
+		szClassName,															
+		_T("Windows Programming #3"),											
+		WS_OVERLAPPEDWINDOW,													
+		440,																	
+		140,																	
+		620,																	
+		413,																	
+		HWND_DESKTOP,															
+		NULL,																	
+		hThisInstance,															
+		NULL																	
 		);
 
 	/* Make the window visible */
@@ -92,8 +93,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
 	/* Message loop - runs until a 0 is in the queue */
 	while (GetMessage(&messages, NULL, 0, 0))
 	{
-		TranslateMessage(&messages);											/* Translates messages */
-		DispatchMessage(&messages);												/* Sends message to WindowProcedure */
+		TranslateMessage(&messages);											
+		DispatchMessage(&messages);												
 	}
 
 	/* The program return-value = 0 */
@@ -105,27 +106,35 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	HDC hdc;																	/* Handle to device context*/
-	PAINTSTRUCT ps;																/* Variable of paint struct type */
-	RECT rect = { 140, 0, 600, 300 };											/* Definition of painting rectangle*/
+	HDC hdc;																	
+	BITMAP bitmap;
+	HDC hdcMem;
+
+	HBITMAP hbmppenImage = NULL;
+    hbmppenImage = (HBITMAP)LoadImage(hInst, L"pen.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    GetObject(hbmppenImage, sizeof(bitmap), &bitmap);
+
+	PAINTSTRUCT ps;																
+	RECT rect2 = {140, 320, 20, 20 };
+	RECT rect = { 140, 0, 600, 300 };											
 	HPEN hpen;
 	/* Declaration of an HPEN object, used as a "pen" element */
-	static HWND lineTool, penTool, rectTool, ellipseTool,						/* Declaration of HWND objects used in the window */	
+	static HWND lineTool, penTool, rectTool, ellipseTool,						
 		clearButton, bezierTool, eraserTool, weightArea, okButton,
 		colorButton;
-	HWND toolList[] = { penTool, lineTool, rectTool, ellipseTool,						/* Declaration of HWND objects used in the window */
+	HWND toolList[] = { penTool, lineTool, rectTool, ellipseTool,						
 		clearButton, bezierTool, eraserTool };
-	static BOOL isDrawing = FALSE;												/* "Flag" variable used to determined whether the mouse is drawind or not */
-	static int xStart, yStart, xEnd, yEnd;										/* Start and ending positions of the drawn lines*/
-	static int mouse_x, mouse_y;												/* Variables used to determine whether the mouse is in the painting area */
-	int cxCoord = 0, cyCoord = 0;												/**/
+	static BOOL isDrawing = FALSE;												
+	static int xStart, yStart, xEnd, yEnd;										
+	static int mouse_x, mouse_y;												
+	int cxCoord = 0, cyCoord = 0;												
 	char buffer[12] = "Set weight";
 	char buffer2[12] = "Set color";
 	char buffer3[12] = "Fill object";
 	char textStore[50];
-	POINT bez[4] = { { 60, 80 },{ 88, 112 },{ 210, 67 },{ 160, 20 } };			/* The bezier coordinates */
+	POINT bez[4] = { { 290, 100 },{ 299, 102 },{ 310, 67 },{ 200, 40 } };			/* The bezier coordinates */
 	static bool bezier = false;					
-	static int weight = 4;														/* Weight of the drawn elements */
+	static int weight = 4;														
 	HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hwnd, GWLP_HINSTANCE);
 	HBITMAP bitmapHBmp;
 	BITMAP bitmapBmp;
@@ -133,8 +142,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 	GetObject(bitmapHBmp, sizeof(bitmapBmp), &bitmapBmp);
 	mouse_x = LOWORD(lParam);
 	mouse_y = HIWORD(lParam);
-	COLORREF colour = RGB(0, 0, 0);												/* Initialization of the color variable */
-	HBRUSH hbrush;																/* HBRUSH struc variable, used in case WM_PAINT */
+	COLORREF colour = RGB(0, 0, 0);												
+	HBRUSH hbrush;																
 	switch (message)                  /* handle the messages */
 	{
 	case WM_COMMAND:
@@ -256,15 +265,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	case WM_LBUTTONDOWN:
 	{
-		if (mouse_x > 140 && mouse_x < 600 && mouse_y > 0 && mouse_y < 300)					/* Check whether the mouse is in the painting area */
+		if (mouse_x > 140 && mouse_x < 600 && mouse_y > 0 && mouse_y < 300)					
 		{
-			if (Button_GetCheck(GetDlgItem(hwnd, IDB_GREEN)) == BST_CHECKED)				/* Check whether the button green is checked */
+			if (Button_GetCheck(GetDlgItem(hwnd, IDB_GREEN)) == BST_CHECKED)				
 			{
-				colour = RGB(0, 255, 0);													/* Set color to green */
+				colour = RGB(0, 255, 0);													
 			}
-			else if (Button_GetCheck(GetDlgItem(hwnd, IDB_BLACK)) == BST_CHECKED)			/* Check whether the button black is checked */
+			else if (Button_GetCheck(GetDlgItem(hwnd, IDB_BLACK)) == BST_CHECKED)			
 			{
-				colour = RGB(0, 0, 0);														/* Set color to black */
+				colour = RGB(0, 0, 0);														
 			}
 			hpen = CreatePen(PS_SOLID, weight, colour);
 			hdc = GetDC(hwnd);
@@ -273,30 +282,30 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			yStart = HIWORD(lParam);
 			xEnd = LOWORD(lParam);
 			yEnd = HIWORD(lParam);
-			if (Button_GetCheck(lineTool) == BST_CHECKED) {									/* Check whether the button lineTool is checked */
+			if (Button_GetCheck(lineTool) == BST_CHECKED) {									
 				SetROP2(hdc, R2_XORPEN);
 				MoveToEx(hdc, xStart, yStart, NULL);
 				LineTo(hdc, xEnd, yEnd);
 				isDrawing = TRUE;
 			}
-			if (Button_GetCheck(penTool) == BST_CHECKED) {									/* Check whether the button penTool is checked */
+			if (Button_GetCheck(penTool) == BST_CHECKED) {									
 				xStart = LOWORD(lParam);
 				yStart = HIWORD(lParam);
 				isDrawing = TRUE;
 			}
-			if (Button_GetCheck(rectTool) == BST_CHECKED) {									/* Check whether the button rectTool is checked */
+			if (Button_GetCheck(rectTool) == BST_CHECKED) {									
 				hbrush = getBrush(hwnd, colour);
 				FillRectangle(rectTool, hwnd, hbrush, hdc, xStart, yStart, xEnd, yEnd);
 				isDrawing = TRUE;
 				DeleteObject(hbrush);
 			}			
-			if (Button_GetCheck(ellipseTool) == BST_CHECKED) {								/* Check whether the button elipseTool is checked */
+			if (Button_GetCheck(ellipseTool) == BST_CHECKED) {								
 				hbrush = getBrush(hwnd, colour);
 				FillEllipse(rectTool, hwnd, hbrush, hdc, xStart, yStart, xEnd, yEnd);
 				isDrawing = TRUE;
 				DeleteObject(hbrush);
 			}
-			if (Button_GetCheck(bezierTool) == BST_CHECKED)									/* Check whether the button bezierTool is checked */
+			if (Button_GetCheck(bezierTool) == BST_CHECKED)									
 			{
 			}
 			DeleteObject(hpen);
@@ -307,19 +316,19 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	case WM_MOUSEMOVE:
 	{
-		if (mouse_x > 140 && mouse_x < 600 && mouse_y > 0 && mouse_y < 300)	{				/* Check whether the mouse is in the painting area */
+		if (mouse_x > 140 && mouse_x < 600 && mouse_y > 0 && mouse_y < 300)	{				
 			hdc = GetDC(hwnd);
 			if (isDrawing == TRUE) {
-				if (Button_GetCheck(GetDlgItem(hwnd, IDB_GREEN)) == BST_CHECKED) {			/* Check whether the button green is checked */
+				if (Button_GetCheck(GetDlgItem(hwnd, IDB_GREEN)) == BST_CHECKED) {			
 					colour = RGB(0, 255, 0);
 				}
-				else if (Button_GetCheck(GetDlgItem(hwnd, IDB_BLACK)) == BST_CHECKED) {		/* Check whether the button black is checked */
+				else if (Button_GetCheck(GetDlgItem(hwnd, IDB_BLACK)) == BST_CHECKED) {		
 					colour = RGB(0, 0, 0);
 				}
 				hpen = CreatePen(PS_SOLID, weight, colour);
 				SelectObject(hdc, hpen);
 				SetROP2(hdc, R2_NOTXORPEN);
-				if (Button_GetCheck(lineTool) == BST_CHECKED) {								/* Check whether the button lineTool is checked */
+				if (Button_GetCheck(lineTool) == BST_CHECKED) {								
 					MoveToEx(hdc, xStart, yStart, NULL);
 					LineTo(hdc, xEnd, yEnd);
 					xEnd = LOWORD(lParam);
@@ -396,23 +405,33 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		}
 		break;
 	}
+	/*case WM_ERASEBKGND: {
+		OnEraseBkGnd(hwnd, rect2);
+		break;
+	}*/
+
 	case WM_PAINT: {
 		hdc = BeginPaint(hwnd, &ps);
 		FillRect(hdc, &rect, CreateSolidBrush(RGB(255, 255, 255)));
 		HDC hdc_mem = CreateCompatibleDC(hdc);
 		BITMAP 			bitmap;
 		HGDIOBJ 		oldBitmap;
+		//OnEraseBkGnd(hwnd, rect2);
 
 		oldBitmap = SelectObject(hdc, hBitmap);
 		GetObject(hBitmap, sizeof(bitmap), &bitmap);
 		BitBlt(hdc, 0, 0, bitmapBmp.bmWidth, bitmapBmp.bmHeight, hdc_mem, 0, 410, SRCCOPY);
 
+		hdcMem = CreateCompatibleDC(hdc);
+
+		SelectObject(hdcMem, hbmppenImage);
+        BitBlt(hdc, 20, 390, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+		DeleteDC(hdcMem);
+
 		SelectObject(hdc_mem, bitmapHBmp);
 		DeleteObject(hdc_mem);
 		SetBkMode(hdc, TRANSPARENT);
-		//TextOut(hdc, 460, 202, buffer, strlen(buffer));
-		//TextOut(hdc, 460, 235, buffer2, strlen(buffer2));
-		//TextOut(hdc, 460, 320, buffer3, strlen(buffer3));
 		if (bezier) {
 			HPEN localhpen = CreatePen(PS_SOLID, weight, colour);
 			SelectObject(hdc, localhpen);
@@ -430,11 +449,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		break;
 	}
 	case WM_DESTROY:
-		PostQuitMessage(0);       /* send a WM_QUIT to the message queue */
+		PostQuitMessage(0);       
 		break;
-	default:                      /* for messages that we don't deal with */
+	default:                      
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return TRUE;
 }
-
